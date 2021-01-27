@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+
+
+{% block subtitle %}
+    Upload a sample
+{% endblock %}
+{% block content %}
+    <form method="post" enctype="multipart/form-data">
+    {% for field in form %}
+        {% csrf_token %}
+        <div class="fieldWrapper">
+        {{ field }}
+        {{ field.errors }}
+        </div>
+    {% endfor %}
+    <div class="fieldWrapper">
+        <input type="submit" value="Upload">
+    </div>
+    </form>
+
+{% endblock %}

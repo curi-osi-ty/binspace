@@ -1,0 +1,69 @@
+{% extends "base_generic.html" %}
+
+
+{% block subtitle %}
+    Sample: {{ sample_name }}
+{% endblock %}
+{% block content %}
+    Sha1sum: {{ sample_hash }} <br>
+    Uploaded at: {{ uploaded_at }} <br>
+    Available Reports: {{ num_of_available_reports }}
+    <div class="table-responsive" style="text-align:center">
+    <table class="table table-striped table-sm">
+        <thead>
+            <tr>
+                <th> Tool </th>
+                <th> Report Status </th>
+                <th> Latest Report Date </th>
+                <th> Action </th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for entry_of_tool in report_of_tool %}
+        <tr>
+            <td> {{ entry_of_tool.tool }}</td>
+            <td id="status{{ entry_of_tool.tool_id }}"> {{ entry_of_tool.status }}</td>
+            <td> {{ entry_of_tool.latest_report_date }}</td>
+            <td> <a href="/utils/generate/{{ entry_of_tool.tool_id }}/{{ sample_uid }}" class="btn btn-primary px-4 py-2 btn-sm">Generate</a>
+                <a href="/utils/report/{{ sample_hash }}/tool{{ entry_of_tool.tool_id }}" target="_blank" class="btn btn-secondary px-4 py-2 btn-sm">Results</a>
+                <button onclick="get_status('{{ entry_of_tool.tool_id }}', '{{ sample_hash }}')" class="btn btn-secondary px-4 py-2 btn-sm">Refresh</button>
+            </td>
+        </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+    function get_result(id, file) {
+        var xhttp = new XMLHttpRequest();
+        var resultTextId = "result"+id;
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var statusElement;
+                statusElement = document.getElementById(resultTextId);
+                statusElement.value = this.responseText;
+            }
+        };
+        xhttp.open("GET", "/utils/result/"+file+"/tool"+id, true);
+        xhttp.send();
+    }
+
+    function get_status(id, file) {
+        var xhttp = new XMLHttpRequest();
+        var statusTextId = "status"+id;
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var statusElement;
+                statusElement = document.getElementById(statusTextId);
+                statusElement.innerHTML = this.responseText;
+            }
+        };
+        xhttp.open("GET", "/utils/status/"+file+"/tool"+id, true);
+        xhttp.send();
+    }
+
+    </script>
+{% endblock %}
